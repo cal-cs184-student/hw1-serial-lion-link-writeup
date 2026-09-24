@@ -56,38 +56,41 @@
 			<figcaption>basic/test4.svg screenshot with the pixel inspector.</figcaption>
 		</figure>
 
-		Our initial algorithm finds the bounding box of the triangle (i.e. the min and max x and y coordinates), then iterates over each coordinate in the box, and checks whether it is within the lines defined by the three corners.
+		To rasterize a triangle, we find the bounding lines of the triangle and check that every point within a bounding box of the triangle is within the line boundaries formed by the vertices of the triangle. We check both the clockwise and counterclockwise orderings of the vertices, as they can be given in any order. 
+		Our initial algorithm finds the bounding box of the triangle (i.e. the min and max x and y coordinates), then iterates over each coordinate in the box, and checks whether it is within the lines defined by the three corners. This matches the upper bound of checking each sample in the bounding box. 
+		
+		<h2>Task 2: Antialiasing by Supersampling</h2>
+		To supersample, we take the same idea of checking each pixel within the triangle, but for each pixel, we take a uniform spread of samples.
+		Our modifications impacted the rasterization pipeline for both the image and the square boundary; we had to make sure the scale the square boundary accordingly by modifying the rasterize_point and fill_pixel functions. The resolve_to_framebuffer function was also updated to downsample the supersampled buffer by updating each pixel to be the average of its samples.
+		Supersampling reduces aliasing and improves image quality (i.e. removing jaggies). By taking more samples, we antialias triangles because we capture more points than just the center of the pixel, which gives us more information to make a more accurate picture.
 
-		TODO: rasterization explanation + upper bound
-
-		<p>Here is an example 2x2 gridlike structure using an HTML table. Each <b>tr</b> is a row and each <b>td</b> is a column in that row. You might find this useful for framing and showing your result images in an organized fashion.</p>
+		<!-- <p>Here is an example 2x2 gridlike structure using an HTML table. Each <b>tr</b> is a row and each <b>td</b> is a column in that row. You might find this useful for framing and showing your result images in an organized fashion.</p> -->
 		<div style="display: flex; flex-direction: column; align-items: center;">
 			<table style="width: 100%; text-align: center; border-collapse: collapse;">
 			  <tr>
 				<td style="text-align: center;">
-				  <img src="assets/lion.jpg" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
+				  <img src="assets/screenshot_9-23_23-43-47.png" width="400px"/>
+				  <figcaption>basic/test4.svg with sample rate 1.</figcaption>
 				</td>
 				<td style="text-align: center;">
-				  <img src="assets/lion.jpg" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
+				  <img src="assets/screenshot_9-23_23-43-55.png" width="400px"/>
+				  <figcaption>basic/test4.svg with sample rate 4.</figcaption>
 				</td>
 			  </tr>
 			  <tr>
-				<td style="text-align: center;">
+				<!-- <td style="text-align: center;"> -->
+				  <img src="assets/screenshot_9-23_23-44-1.png" width="400px"/>
+				  <figcaption>basic/test4.svg with sample rate 16.</figcaption>
+				<!-- </td> -->
+				<!-- <td style="text-align: center;">
 				  <img src="assets/lion.jpg" width="400px"/>
 				  <figcaption>Caption goes here.</figcaption>
-				</td>
-				<td style="text-align: center;">
-				  <img src="assets/lion.jpg" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
-				</td>
+				</td> -->
 			  </tr>
 			</table>
 		</div>
-		
-		<h2>Task 2: Antialiasing by Supersampling</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+		As seen in the examples above, as the sampling rate increases, the pixels are no longer binary (i.e. completely filled or blank); some pixels are lighter than others as a result of the supersampling. Additionally, pixels that were previously blank are now a light shade of red, as supersampling was able to capture more sample points beyond the center of the pixel.
 
 		<h2>Task 3: Transforms</h2>
 		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
