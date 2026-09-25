@@ -28,7 +28,7 @@
 	<body>
 		<div class="container">
 		<h1>CS184/284A Fall 2026 Homework 1 Write-Up</h1>
-		<div style="text-align: center;">Names: </div>
+		<div style="text-align: center;">Names: Marie-Anne Xu, Nicolas Rakela</div>
 
 		<br>
 
@@ -48,8 +48,13 @@
 		-->
 
 		<h2>Overview</h2>
-		Give a high-level overview of what you implemented in this homework. Think about what you've built as a whole. Share your thoughts on what interesting things you've learned from completing the homework.
-
+		For this assignment, we implemented a basic rasterization pipeline that can turn SVG images into pixels. We implemented a triangle rasterizer, supersampling to prevent aliasing, transforms, barycentric interpolation, texture sampling, and mipmapping. 
+		What we learned and found interesting about this assignment: 
+		- The edge function does more than just check if a point is inside a triangle. It gives a side, barycentric weights, and it can also be implemented cheaply in GPUs given that L(x, y) and L(x+1, y) are differ only by an addition.
+		- Antialiasing and mipmapping are basically the same thing, but just in opposite directions. This is expected since both fix undersampling, but implementing them in together in one assignemnt really highlights their similarities and differences.
+		- There are many differnt coordinates and almost every bug comes from a coordinate frame confusion. 
+		- Floating point math is very annoying. We had several white dots in many images and it took us a long time to figure out that it was exclusively because of floating point arithmetic differences when evaluating vertices in different orders. 
+	
 		<h2>Task 1: Drawing Single-Color Triangles</h2>
 		<figure>
 			<img src="assets/task1.png" alt="task1" style="width:50%"/>
@@ -122,7 +127,30 @@
 		</figure> -->
 
 		<h2>Task 5: "Pixel sampling" for texture mapping</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+		Pixel sampling is the step that chooses the color that a screen sample should take from the texture image. The process looks very similar to triangle rasterization, but insted of trying to find the color of the pixel, we are trying to find the color of the texture at that pixel. When sampling a texture, each triangle vertex carries a (u,v) texture coordinate, so we interpolate those barycentrical and then scale by the texture's width to get a texel coordinate. Once we have a texel coordinateThere are two ways we implemented to determine the final texel. First, we implemented nearest neighbor sampling, which finds the closest texel in the texture to the sample. Second, we implemented bilinear sampling, which finds the four closest texels to the sample and interpolates them .
+		<figure>
+			<img src="assets/screenshot_9-25_11-2-12.png" alt="Sample Nearest, 1 samples per pixel" style="width:50%"/>
+			<figcaption>Sample Nearest, 1 samples per pixel</figcaption>
+		</figure>
+		<figure>
+			<img src="assets/screenshot_9-25_11-2-37.png" alt="Sample Nearest, 16 samples per pixel" style="width:50%"/>
+			<figcaption>Sample Nearest, 16 samples per pixel</figcaption>
+		</figure>
+		<figure>
+			<img src="assets/screenshot_9-25_11-2-18.png" alt="Sample Bilinear, 1 samples per pixel" style="width:50%"/>
+			<figcaption>Sample Bilinear, 1 samples per pixel</figcaption>
+		</figure>
+		<figure>
+			<img src="assets/screenshot_9-25_11-2-46.png" alt="Sample Bilinear, 16 samples per pixel" style="width:50%"/>
+			<figcaption>Sample Bilinear, 16 samples per pixel</figcaption>
+		</figure>
+		I zoomed into one of the trees in the campanile image where a thin high contrast diagonal branch runs against the sky. At this zoom, there are many pixels mapping to the same texel, which is where both sampling methods diverge the most. 
+		- Nearest, 1 sample per pixel: The pixel inspector shows discrete blocks of color with hard boundaries, and a clear diagonal staircase pattern. Texture blocks make this look very ugly. 
+		- Nearest, 16 samples per pixel: Barely different from nearest, 1 sample per pixel. The pixel inspector shows discrete blocks of color with less hard boundaries, and a teh same diagonal staircase pattern. Texture blocks are still very distinguishable.
+		- Bilinear, 1 sample per pixel: Essentially identical to bilinear, 1 sample per pixel. The gradient looks slightly smoother, but likely the 16 samples land on the same (u,v).
+
+		The difference is largest between nearest and bilinear sampling under magnification, when many screen pixels map to the same texel. Nearest quantizes an entire block to one color and the texel becomes visible. Bilinear looks smooth. 
+		The difference is small when each pizel covers one or more texels. Nearest pick a representative texel and bilinear averages a few neighbors, but the answers are close.
 
 		<h2>Task 6: "Level Sampling" with mipmaps for texture mapping</h2>
 		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
