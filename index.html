@@ -145,9 +145,11 @@
 			<figcaption>Sample Bilinear, 16 samples per pixel</figcaption>
 		</figure>
 		I zoomed into one of the trees in the campanile image where a thin high contrast diagonal branch runs against the sky. At this zoom, there are many pixels mapping to the same texel, which is where both sampling methods diverge the most. 
-		- Nearest, 1 sample per pixel: The pixel inspector shows discrete blocks of color with hard boundaries, and a clear diagonal staircase pattern. Texture blocks make this look very ugly. 
-		- Nearest, 16 samples per pixel: Barely different from nearest, 1 sample per pixel. The pixel inspector shows discrete blocks of color with less hard boundaries, and a teh same diagonal staircase pattern. Texture blocks are still very distinguishable.
-		- Bilinear, 1 sample per pixel: Essentially identical to bilinear, 1 sample per pixel. The gradient looks slightly smoother, but likely the 16 samples land on the same (u,v).
+		<ul>
+			<li>Nearest, 1 sample per pixel: The pixel inspector shows discrete blocks of color with hard boundaries, and a clear diagonal staircase pattern. Texture blocks make this look very ugly.</li>
+			<li>Nearest, 16 samples per pixel: Barely different from nearest, 1 sample per pixel. The pixel inspector shows discrete blocks of color with less hard boundaries, and the same diagonal staircase pattern. Texture blocks are still very distinguishable.</li>
+			<li>Bilinear, 1 sample per pixel: Essentially identical to bilinear, 1 sample per pixel. The gradient looks slightly smoother, but likely the 16 samples land on the same (u,v).</li>
+		</ul>
 
 		The difference is largest between nearest and bilinear sampling under magnification, when many screen pixels map to the same texel. Nearest quantizes an entire block to one color and the texel becomes visible. Bilinear looks smooth. 
 		The difference is small when each pizel covers one or more texels. Nearest pick a representative texel and bilinear averages a few neighbors, but the answers are close.
