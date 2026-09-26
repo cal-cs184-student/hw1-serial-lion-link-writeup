@@ -127,7 +127,7 @@
 		</figure> -->
 
 		<h2>Task 5: "Pixel sampling" for texture mapping</h2>
-		Pixel sampling is the step that chooses the color that a screen sample should take from the texture image. The process looks very similar to triangle rasterization, but insted of trying to find the color of the pixel, we are trying to find the color of the texture at that pixel. When sampling a texture, each triangle vertex carries a (u,v) texture coordinate, so we interpolate those barycentrical and then scale by the texture's width to get a texel coordinate. Once we have a texel coordinateThere are two ways we implemented to determine the final texel. First, we implemented nearest neighbor sampling, which finds the closest texel in the texture to the sample. Second, we implemented bilinear sampling, which finds the four closest texels to the sample and interpolates them .
+		Pixel sampling is the step that chooses the color that a screen sample should take from the texture image. The process looks very similar to triangle rasterization, but insted of trying to find the color of the pixel, we are trying to find the color of the texture at that pixel. When sampling a texture, each triangle vertex carries a (u,v) texture coordinate, so we interpolate those barycentrically and then scale by the texture's width to get a texel coordinate. Once we have a texel coordinate, there are two ways that we implemented to determine the final texel. First, we implemented nearest neighbor sampling, which finds the closest texel in the texture to the sample. Second, we implemented bilinear sampling, which finds the four closest texels to the sample and interpolates them .
 		<figure>
 			<img src="assets/screenshot_9-25_11-2-12.png" alt="Sample Nearest, 1 samples per pixel" style="width:50%"/>
 			<figcaption>Sample Nearest, 1 samples per pixel</figcaption>
@@ -144,7 +144,7 @@
 			<img src="assets/screenshot_9-25_11-2-46.png" alt="Sample Bilinear, 16 samples per pixel" style="width:50%"/>
 			<figcaption>Sample Bilinear, 16 samples per pixel</figcaption>
 		</figure>
-		I zoomed into one of the trees in the campanile image where a thin high contrast diagonal branch runs against the sky. At this zoom, there are many pixels mapping to the same texel, which is where both sampling methods diverge the most. 
+		We zoomed into one of the trees in the campanile image where a thin high contrast diagonal branch runs against the sky. At this zoom, there are many pixels mapping to the same texel, which is where both sampling methods diverge the most. 
 		<ul>
 			<li>Nearest, 1 sample per pixel: The pixel inspector shows discrete blocks of color with hard boundaries, and a clear diagonal staircase pattern. Texture blocks make this look very ugly.</li>
 			<li>Nearest, 16 samples per pixel: Barely different from nearest, 1 sample per pixel. The pixel inspector shows discrete blocks of color with less hard boundaries, and the same diagonal staircase pattern. Texture blocks are still very distinguishable.</li>
@@ -155,11 +155,16 @@
 		The difference is small when each pizel covers one or more texels. Nearest pick a representative texel and bilinear averages a few neighbors, but the answers are close.
 
 		<h2>Task 6: "Level Sampling" with mipmaps for texture mapping</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+		Level sampling is the step that allows us to choose which level of mip map we will be sampling from. The process is similar to pixel sampling, but instead of choosing how to read within a level, we choose which levl to read from. The problem it solves is that when a texture surface has a high gradient, one pixel covers many texels. A mip map precomputes an average of several texels, so that the gradient looks smoother. 
+		We implement this the following way: we pick a level based on the barycentric UV on the current sample in `rasterize_texture_triangle` and t compute the difference with one pixel down and one to the right. This difference then gets scaled by the level 0 texture dimensions to convert to texel space. L_ZERO skips this and reads level 0, L_NEAREST rounds this value to the nearest level, and L_LINEAR blends the two bracketing levels by the fractional part.
+		<br>
+		Putting all of the different sampling methods together, we conclude that by far the most costly method is super sampling. Computationally it is N times more expensive, and it costs an N times larger sample buffer. Bilinear pixel sampling costs 4 texel fetches instead of 1 and no extra memory. Mipmapping costs a log per sample plus a fixed 33% of the texture, and can run fast like L_ZERO since small levels fit in cache. They also fix different things and don't substitute for each other. Supersampling handles jagged silhouettes but not texture aliasing (our Part 5 images show nearest at 16 samples/pixel looking nearly identical to nearest at 1), bilinear pixel sampling handles texture magnification blockiness, and mipmapping handles minification shimmer.
 
+
+<!-- 
 		<h2>(Optional) Task 7: Extra Credit - Draw Something Creative!</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
+		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. -->
+<!-- 
 		<h2>Additional Notes (please remove)</h2>
 		<ul>
 			<li>You can also add code if you'd like as so: <code>code code code</code></li>
@@ -169,7 +174,7 @@
 					<li>You can write display equations like so: \[ a^2 + b^2 = c^2 \]</li>
 				</ul>
 			</li>
-		</ul>
+		</ul> -->
 		</div>
 	</body>
 </html>
