@@ -159,7 +159,30 @@
 		We implement this the following way: we pick a level based on the barycentric UV on the current sample in `rasterize_texture_triangle` and t compute the difference with one pixel down and one to the right. This difference then gets scaled by the level 0 texture dimensions to convert to texel space. L_ZERO skips this and reads level 0, L_NEAREST rounds this value to the nearest level, and L_LINEAR blends the two bracketing levels by the fractional part.
 		<br>
 		Putting all of the different sampling methods together, we conclude that by far the most costly method is super sampling. Computationally it is N times more expensive, and it costs an N times larger sample buffer. Bilinear pixel sampling costs 4 texel fetches instead of 1 and no extra memory. Mipmapping costs a log per sample plus a fixed 33% of the texture, and can run fast like L_ZERO since small levels fit in cache. They also fix different things and don't substitute for each other. Supersampling handles jagged silhouettes but not texture aliasing (our Part 5 images show nearest at 16 samples/pixel looking nearly identical to nearest at 1), bilinear pixel sampling handles texture magnification blockiness, and mipmapping handles minification shimmer.
-
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="assets/screenshot_9-25_19-57-25.png" width="400px"/>
+				  <figcaption>L_ZERO & P_NEAREST</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="assets/screenshot_9-25_19-57-34.png" width="400px"/>
+				  <figcaption>L_ZERO & P_LINEAR</figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="screenshot_9-25_19-57-42.png" width="400px"/>
+				  <figcaption>L_NEAREST & P_NEAREST</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="assets/screenshot_9-25_19-57-47.png" width="400px"/>
+				  <figcaption>L_NEAREST & P_LINEAR.</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
 
 <!-- 
 		<h2>(Optional) Task 7: Extra Credit - Draw Something Creative!</h2>
